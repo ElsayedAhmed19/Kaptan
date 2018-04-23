@@ -1,0 +1,410 @@
+/*All Pages Have it;s own designs in each of the following sections separated by a star line
+
+
+created by : Mahmoud Maher
+@2018
+*/
+
+
+/*start body*/
+body{
+    width: 100%;
+    height: 100%;
+    background-image: url('images/1_6-thumb-1060xauto-7051.jpg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+/*end body*/
+/**********************************************************************************************************************/
+/*start logo*/
+#logo{
+  margin: 0 auto;
+}
+/*end logo*/
+/**********************************************************************************************************************/
+/*start header*/
+#header{
+    font-size: 48px;
+    color: cornflowerblue;
+    font-family: "Copperplate Gothic Bold";
+}
+/*end header*/
+/**********************************************************************************************************************/
+/*start border*/
+#border{
+    position: absolute;
+    margin: auto;
+    right: 0;
+    left: 0;
+    width: 400px;
+    height: 5px;
+    background-color: blue;
+}
+/*end border*/
+/**********************************************************************************************************************/
+/*start social*/
+#social{
+    list-style-type: none;
+    position: relative;
+    color: whitesmoke;
+    top: 90px;
+    /*left: 43.5%;*/
+    /*margin: -100px 0 0 -150px;*/
+    font-size: 40px;
+    text-align: center;
+    display: block;
+}
+
+/*end social*/
+/**********************************************************************************************************************/
+/*start navbar*/
+#sidebar {
+    position:absolute;
+    top:0px;
+    left:0px;
+    height:95vh;
+    overflow: hidden;
+    background:transparent;
+    text-align:center;
+    transform-origin:left;
+    transform:perspective(1200px) rotateY(90deg);
+    transition:all 400ms ease;
+    background-color: transparent;
+    margin-top: 30px;
+    border-right: double 3px #00BFFF;
+}
+#sidebar a li {
+    color:#ccc;
+    font-size:60px;
+    width:100%;
+    height:50px;
+    line-height:70px;
+}
+#sidebar.active {
+    transform:perspective(1200px) rotateY(0deg);
+}
+#toggle-btn {
+    position:absolute;
+    left:30px;
+    top:20px;
+    transition:left 200ms linear 0ms,transform 300ms ease 100ms;
+}
+#toggle-btn.active {
+    left:230px;
+    transform:rotate(360deg);
+}
+#toggle-btn span {
+    position:relative;
+    top:0px;
+    display:block;
+    background:#66afe9;
+    width:30px;
+    height:5px;
+    margin:5px 0px;
+    cursor:pointer;
+    transition:transform 300ms ease 200ms;
+}
+#toggle-btn.active span:nth-child(1) {
+    top:10px;
+    transform:rotate(45deg);
+}
+#toggle-btn.active span:nth-child(2) {
+    opacity:0;
+}
+#toggle-btn.active span:nth-child(3) {
+    top:-10px;
+    transform:rotate(-45deg);
+}
+#div1{
+    font-size: 30px;
+    color: #00BFFF;
+}
+#div2{
+    font-size: 30px;
+    color: #1E90FF;
+}
+#div3{
+    font-size: 30px;
+    color: #4169E1;
+}
+#div4{
+    font-size: 30px;
+    color: blue;
+}
+#div5{
+    font-size: 30px;
+    color: #0000B0;
+}
+#div6{
+    font-size: 30px;
+    color: darkblue;
+}
+/*end navbar*/
+/**********************************************************************************************************************/
+/*start dropdown language*/
+#lang{
+    float: right;
+}
+.btn-success{
+    background-color: limegreen;
+    border-radius: 40px;
+    color: blue;
+    position: relative;
+    margin: auto;
+    right: 0;
+    left: 0px;
+    width: 220px;
+    height: 50px;
+    border: none;
+    font-size: 20px;
+    text-align: center;
+}
+.btn-success:hover{
+    background-color: #2aabd2;
+}
+.btn-primary{
+    background-color: #9acfea;
+    border-radius: 40px;
+    color: blue;
+    position: relative  ;
+    margin: auto;
+    right: 0;
+    left: 0px;
+    width: 220px;
+    height: 50px;
+    border: none;
+    font-size: 20px;
+}
+/*end dropdown language*/
+/**********************************************************************************************************************/
+/*start about*/
+p{
+    font-size: 25px;
+}
+
+.div1{
+    background-color: #c4e3f3;
+    opacity: 0.8;
+    margin-top: 30px;
+}
+.fa-info-circle{
+    font-size: 40px;
+}
+.div2{
+    background-color: #c4e3f3;
+    opacity: 0.8;
+    margin-top: 30px;
+}
+.fa-question-circle{
+    font-size: 40px;
+}
+/*end about*/
+/**********************************************************************************************************************/
+/*start whyus*/
+#par1{
+    background-color: #c4e3f3;
+    opacity: 0.8;
+    margin-top: 30px;
+}
+.fa-comments{
+    font-size: 40px;
+}
+#par2{
+    background-color: #c4e3f3;
+    opacity: 0.8;
+    margin-top: 30px;
+}
+.fa-bullseye{
+    font-size: 40px;
+}
+/*end whyus*/
+/**********************************************************************************************************************/
+/*start customers*/
+.col-md-12{
+    margin-top: 20px;
+    margin-left: 20px;
+}
+ul {
+    list-style-type: none;
+}
+/*end customers*/
+/**********************************************************************************************************************/
+/*start contact*/
+#form{
+    margin-left: 20px;
+    background-color:#c4e3f3;
+    opacity: 0.8;
+}
+#contact{
+    margin-top: 30px;
+    margin-left: 50px;
+}
+/*end contact*/
+/**********************************************************************************************************************/
+/*start login*/
+#blogin{
+    border-radius:40px;
+    height: 50px;
+    background: #3498db;
+    background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+    background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+    background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+    background-image: -o-linear-gradient(top, #3498db, #2980b9);
+    background-image: linear-gradient(to bottom, #3498db, #2980b9);
+    border-radius: 28px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+}
+#blogin:hover{
+    background: #3cb0fd;
+    background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+    text-decoration: none;
+}
+#forget{
+    font-size: 25px;
+    color: white;
+}
+#check {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    color: white;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+#check input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: white;
+}
+
+/* On mouse-over, add a grey background color */
+#check:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+#check input:checked ~ .checkmark {
+    background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+#check input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+#check .checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+/*end login*/
+/**********************************************************************************************************************/
+/*strat register*/
+#adminReg{
+    border-radius: 40px;
+    width: 270px;
+    height: 50px;
+    font-size: 25px;
+    color: white;
+    position: static;
+    background-color: blue;
+}
+#adminReg:hover{
+    background-color: #00BFFF;
+    color: blue;
+}
+#clientReg{
+    border-radius: 40px;
+    width: 270px;
+    height: 50px;
+    font-size: 25px;
+    color: white;
+    position: static;
+    background-color: green;
+}
+#clientReg:hover{
+    background-color: limegreen;
+    color: green;
+}
+#driverReg{
+    border-radius: 40px;
+    width: 270px;
+    height: 50px;
+    font-size: 25px;
+    color: white;
+    position: static;
+    background-color: darkred;
+}
+#driverReg:hover{
+    background-color: red;
+    color:darkred ;
+}
+/*end register*/
+/**********************************************************************************************************************/
+/*start register*/
+#txtName , #txtPassword , #txtPassword , #txtemail , #txtrePassword{
+    background-color: transparent;
+    border: none;
+    border-bottom: solid gray 2px;
+}
+.input-group-addon{
+    background-color: transparent;
+    border: none;
+    font-size: 25px;
+    color: #00BFFF;
+}
+#regForm{
+    background-color: white;
+    opacity: 0.8;
+    border-radius: 20px;
+
+}
+#breg{
+    background-color: blue;
+    color: white;
+}
+#breg:hover{
+    background-color: #00BFFF;
+}
+/*end register*/
