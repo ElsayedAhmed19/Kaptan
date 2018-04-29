@@ -20,6 +20,9 @@
     <!-- Adr instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="{{URL::asset('dist/css/skins/_all-skins.min.css')}}">
     <link rel="stylesheet" href="{{URL::asset('plugins/datatables/dataTables.bootstrap.css')}}">
+
+    <link rel="stylesheet" href="{!!url('/dist/css/custom.css')!!}">
+
     @yield("styles")
 </head>
 <body class="hold-transition skin-blue fixed sidebar-mini">
@@ -100,8 +103,8 @@
                                 {{'List All Clients'}}</a></li>
                             <li><a href="{{url('clients/add_client')}}"><i class="fa fa-circle-o"></i> 
                                 {{'Add New Client'}}</a></li>
-                            <li><a href="{{url('clients/history')}}"><i class="fa fa-circle-o"></i> 
-                                {{'Requests'}}</a></li>
+                            <li><a href="{{url('clients/create_request')}}"><i class="fa fa-circle-o"></i> 
+                                {{'Make Request'}}</a></li>
                         </ul>
                     </li>
                    <!--  <li class="treeview">

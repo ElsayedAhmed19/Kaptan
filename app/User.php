@@ -12,9 +12,4 @@ class User extends Authenticatable
     public $name;
     public $email;
     public $phone;
-
-    public __construct($name, $email, $phone)
-    {
-        return (new User($name, $email, $phone));
-    }
 }

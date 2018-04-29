@@ -10,6 +10,21 @@ class UsersRepository extends FirebaseHelper
 	function __construct()
 	{
 		$this->firebaseHelper = new FirebaseHelper();
-		dd($this->firebaseHelper->auth);
 	}
+
+	public function updateUser($userData)
+	{
+		$firebaseHelper = new FirebaseHelper();
+		$user = $firebaseHelper->auth->changeUserPassword($userData['id'], $userData['password']);
+		$user = $firebaseHelper->auth->changeUserEmail($userData['id'], $userData['email']);
+
+		dd($user);
+	}
+
+    public static function getUserByID($id){
+        $helper = new FirebaseHelper;
+        $data = $helper->get('users/customers'.'/'.$id);
+//        dump($data);die();
+        return $data;
+    }
 }

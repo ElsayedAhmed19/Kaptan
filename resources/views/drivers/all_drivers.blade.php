@@ -1,14 +1,11 @@
 @extends("layouts.master")
 @section('title', "All Drivers")
 @section("content")
-
-@section("content")
-
 @section('content_header')
 
 <ol class="breadcrumb">
 	<li><a href="{{url('/')}}"><i class="fa fa-home"></i> Home</a></li>
-    <li><a href="{{url('clients')}}">Drivers</a></li>
+    <li><a href="{{url('drivers')}}">Drivers</a></li>
     <li class="active">All Drivers</li>
 </ol>
 @endsection
@@ -29,7 +26,6 @@
                        <th>Name</th>
                        <th>Email</th>
                        <th>Phone</th>
-                       <th>Nationality</th>
                        <th>On Trip</th>
                        <th>Online</th>
                        <th>Blocked</th>
@@ -45,35 +41,83 @@
 @section("scripts")
 <script src="{!!asset('plugins/datatables/jquery.dataTables.min.js')!!}"></script>
 <script src="{!!asset('plugins/datatables/dataTables.bootstrap.min.js')!!}"></script>
+    <script src="{!!asset('dist/js/users.js')!!}"></script>
+
 <script>
     $(document).ready(function () {
         var url = "{{ route('drivers_datatable') }}";
         var columns =  [
-            {data: 'fullname', name: 'fullname'},
-            {data: 'email', name: 'email'},
-            {data: 'phone', name: 'phone'},
-            {data: 'nationality', name: 'nationality'},
-            {data: 'onTrip', name: 'onTrip'},
-            {data: 'onTrip', name: 'onTrip'},
-            {data: 'online', name: 'online'},
-            {data: 'operations', name: 'operations'}
+          {data: 'fullname', name: 'fullname'},
+          {data: 'email', name: 'email'},
+          {data: 'phone', name: 'phone'},
+          {data: 'onTrip', name: 'onTrip'},
+          {data: 'blocked', name: 'blocked'},
+          {data: 'online', name: 'online'},
+          {
+            searchable:false,
+            orderable:false,
+            data: 'operations',
+            name: 'operations',
+            "render": function (data, type, full, meta) {
+                var menu = '<div class="actions-t" id='+full.userID+'>'+
+                  '<a class="dropdown-toggle" data-toggle="dropdown">'+
+                  '<span class="glyphicon glyphicon-menu-hamburger"></span></a>'+
+                  '<ul class="dropdown-menu" id="'+full.userID+'" id="cust_menu">'+
+                  '<li>'+
+                  '<a href="/drivers/'+full.userID+'/edit">Edit</a>'+
+                  '</li>'+
+                  '<li>'+
+                  '<a href="#" class="delete">Delete</a>'+
+                  '</li>';
+
+                  if (full.blocked == 'Yes') {
+                      menu+= '<li>'+
+                        '<a href="/drivers/'+full.userID+'/change_block_status">Approve</a>'+
+                       '</li>';
+                  } else {
+                       menu+= '<li>'+
+                        '<a href="/drivers/'+full.userID+'/change_block_status">Block</a>'+
+                       '</li>';
+                  }
+
+                  menu +=     
+                    '</ul>'+
+                    '</div>';
+
+                  return menu;
+                }
+            }
         ];
-        $('#list').dataTable().fnDestroy();
+      $('#list').dataTable().fnDestroy();
 	    $('#list').DataTable({
 	        "paging": true,
-	        "lengthChange": false,
-	        "searching": true,
-	        "ordering": true,
 	        "info": true,
-	        "autoWidth": false, 
-	        "bfilter": false,
-	        "dom":"l t p r",
+	        "autoWidth": true, 
 	        "responsive": true,
-	        processing: false,
 	        serverSide: false,
 	        ajax: url,
-	        columns: columns
+          columns: columns
 	    });
+
+      $("body").on("click", ".delete", function(){
+        var ul =  $(this).closest("ul");
+        var id = ul.attr("id");
+        bootbox.confirm("Are you sure you want to delete this driver?", function (result) {
+          if (result == true) {
+            $.ajax({
+              url: "{{URL('drivers/delete')}}",
+              method: "DELETE",
+              data: {id: id, _token: "{{csrf_token()}}"},
+              success: function(){
+                ul.closest("tr").remove();
+              },
+              error: function(){
+
+              }
+            });
+          }
+        });
+      });
 	});
 </script>
 @endsection

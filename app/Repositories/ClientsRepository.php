@@ -16,7 +16,7 @@ class ClientsRepository
 	public static function insertClient($data)
 	{
 		$helper = new FirebaseHelper;
-		$isInserted = $helper->insert(self::CLIENT_REFERENCE, $data);
+		$isInserted = $helper->set(self::CLIENT_REFERENCE, $data);
 		return $isInserted;;
 	}
 
@@ -28,9 +28,17 @@ class ClientsRepository
 		return $data;
 	}
 
-	public static function getClientRequests($customerId, $status)
-	{
+	// public static function getClientRequests($customerId, $status)
+	// {
 
+	// 	$helper = new FirebaseHelper;
+	// 	$data = $helper->get(self::CLIENT_REFERENCE."/".$customerId);
+
+	// 	return $data;
+	// }
+
+	public static function getCustomer($customerId)
+	{
 		$helper = new FirebaseHelper;
 		$data = $helper->get(self::CLIENT_REFERENCE."/".$customerId);
 

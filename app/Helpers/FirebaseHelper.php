@@ -22,15 +22,26 @@ class FirebaseHelper
         $this->auth = $firebase->getAuth();
     }
 
-    public function insert($reference, $data = [])
+    public function insert($reference, $data)
     {
-    	$isInserted = false;
+    	$key = null;
     	if (!empty($data)) {
-	    	$this->database->getReference($reference)
+	    	$node = $this->database->getReference($reference)
 		   		->push($data);
-	   		$isInserted = true;
+	   		$key = $node->getKey();;
     	}
-    	return $isInserted;
+    	return $key;
+    }
+
+    public function set($reference, $data)
+    {
+        $isSet = false;
+        if (!empty($data)) {
+            $this->database->getReference($reference."/".$data['id'])
+                ->set($data);
+            $isSet = true;
+        }
+        return $isSet;
     }
 
     public function get($reference)
@@ -39,5 +50,30 @@ class FirebaseHelper
     	$snapshot = $data->getSnapshot();
 
         return $snapshot->getValue();
+    }
+
+    public function queryBuilder($reference)
+    {
+        $query = $this->database->getReference($reference);
+
+        return $query;
+    }
+
+    public function update($reference, $data)
+    {
+        $isSet = false;
+        if (!empty($data)) {
+            $this->database->getReference($reference."/".$data['id'])
+                ->update($data);
+            $isSet = true;
+        }
+        return $isSet;
+    }
+
+
+    public function remove($reference)
+    {
+        $this->database->getReference($reference)
+            ->remove();
     }
 }

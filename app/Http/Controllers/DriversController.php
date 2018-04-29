@@ -8,6 +8,9 @@ use Kreait\Firebase\Database;
 use App\Helpers\FirebaseHelper;
 use Illuminate\Http\Request;
 use App\Repositories\DriversRepository;
+use App\Repositories\UsersRepository;
+use App\Libraries\UsersLibrary;
+use App\Libraries\DriversLibrary;
 use Datatables;
 use Validator;
 
@@ -17,20 +20,23 @@ class DriversController extends Controller
     {
         $data = DriversRepository::getDriver($request->get('email'));
     }
+
 	function insertDriver(Request $request)
 	{
-
         $validator = Validator::make($request->all(), [
-            'name' => 'required|min:6'
+            'name' => 'required|min:6',
+            'email' => 'required|email',
+            'carNumber' => 'required',
+            'carModel' => 'required',
+            'phone' => 'required',
+            'phone' => 'required|numeric',
+            'password' => 'required|confirmed|min:6',
         ]);
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return redirect('drivers/add_driver')
                 ->withErrors($validator)
                 ->withInput();
-            }
-        else
-        {
+        } else {
             $firebaseHelper = new FirebaseHelper;
 
             $createdUser = $firebaseHelper->auth->createUserWithEmailAndPassword(
@@ -57,16 +63,16 @@ class DriversController extends Controller
         		'carModel'=>$carModel,
         		'imageURL'=>'',
         		'isAdmin'=>false,
-        		'isOnline'=>false,
+        		'online'=>false,
         		'membersince'=>time(),
         		'online'=>false,
-    			'onTrip'=>false,
+                'onTrip'=>false,
     			'overallRating'=>0,
     			'overallRatingCount'=>0,
     			'phone'=>$phone,
     			'token'=>'Token',
-    			'userID'=>'User id',
-    			'username'=>'user name'
+    			'userID'=>$id,
+    			'username'=>$name
         	]);
             if ($isInserted) {
                 return redirect('drivers');	
@@ -82,9 +88,12 @@ class DriversController extends Controller
     {
         $drivers = DriversRepository::getDrivers();
         $objDrivers = null;
+        $i = 0;
         foreach ($drivers as $key => $driver) {
-            $driver['id'] = $key;
-            $objDrivers [] = (object) $driver;
+            if (is_array($driver)) {
+                $driver['id'] = $key;
+                $objDrivers [] = (object) $driver;    
+            }            
         }
 
         return Datatables::of($objDrivers) 
@@ -99,10 +108,6 @@ class DriversController extends Controller
             ->addColumn('phone', function ($driver) {
                 $phone = !isset($driver->phone)? 'unspecified': $driver->phone;
                 return $phone;
-            })
-            ->addColumn('nationality', function ($driver) {
-                $nationality = !isset($driver->nationality)? 'unspecified': $driver->nationality;
-                return $nationality;
             })
             ->addColumn('onTrip', function ($driver) {
                 if (!isset($driver->onTrip)) {
@@ -125,9 +130,9 @@ class DriversController extends Controller
                 return $online;
             })
             ->addColumn('blocked', function ($driver) {
-                if (!isset($driver->online)) {
+                if (!isset($driver->blocked)) {
                     $blocked = 'unspecified';
-                } else if($driver->blocked) {
+                } else if($driver->blocked == true) {
                     $blocked = 'Yes';
                 } else {
                     $blocked = 'No';
@@ -135,12 +140,32 @@ class DriversController extends Controller
                 return $blocked;
             })
             ->addColumn('operations', function ($driver) {
-                $returnHTML = view('drivers.partials.menu')->render();
+                $returnHTML = view('drivers.partials._menu')->with(['name'=>'Elsayed'])->render();
                 return $returnHTML;
             })
             ->make(true);
     }
 
+    public function map(){
+        $drivers=DriversRepository::getDriversWithLocations();
+        $online_drivers=array();
+        $offline_drivers=array();
+        $busy_drivers=array();
+
+        foreach ($drivers as $value){
+            if (isset($value['isOnTrip'])&&$value['isOnTrip']==false &&isset($value['isOnline'])&&$value['isOnline']==false){
+                $offline_drivers[]=$value;
+            }elseif(isset($value['isOnTrip'])&&$value['isOnTrip']==true &&isset($value['isOnline'])&&$value['isOnline']==false){
+                $busy_drivers[]=$value;
+            }elseif (isset($value['isOnTrip'])&&$value['isOnTrip']==false &&isset($value['isOnline'])&&$value['isOnline']==true){
+                $online_drivers[]=$value;
+            }
+        }
+//        dump($online_drivers);die();
+
+
+        return view('maps.make_request',compact('online_drivers','offline_drivers','busy_drivers'));
+    }
     public function getDriversToMap()
     {
         $returnedDrivers = [];
@@ -155,5 +180,60 @@ class DriversController extends Controller
             }
         }
         return response()->json($returnedDrivers);
+    }
+
+    public function editDriver($id)
+    {
+        $driver = DriversRepository::getDriver($id);
+
+        if ($driver) {
+            return view('drivers.add_driver', ['driver'=>$driver, 'edit'=>true]);
+        } else {
+            return "not found page will be added lately";
+        }
+    }
+    public function updateDriver(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'name' => 'required|min:6',
+            'email' => 'required|email',
+            'carNumber' => 'required',
+            'carModel' => 'required',
+            'phone' => 'required',
+            'password' => 'required|confirmed|min:6',
+        ]);
+        if ($validator->fails()) {
+            return redirect('drivers/add_driver')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data['id'] = $request->get('id');
+        $data['fullname'] = $request->get('name');
+        $data['email'] = $request->get('email');
+        $data['phone'] = $request->get('phone');
+        $data['carModel'] = $request->get('carModel');
+        $data['carNumber'] = $request->get('carNumber');
+        $data['password'] = $request->get('password');
+
+        $isUpdated = UsersLibrary::updateUser(DriversRepository::DRIVER_REFERENCE, $data);
+        if ($isUpdated) {
+            return redirect('drivers');
+        }
+    }
+
+    public function deleteDriver(Request $request)
+    {
+        $id = $request->get("id");
+        DriversLibrary::deleteDriver($id);
+    }
+
+
+    public function updateDriverBlockStatus($id)
+    {
+        DriversLibrary::updateDriverBlockStatus($id);
+
+        return redirect()->back();
     }
 }

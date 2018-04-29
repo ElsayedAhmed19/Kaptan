@@ -5,12 +5,18 @@ namespace App\Libraries;
 use App\Helpers\FirebaseHelper;
 use App\Repositories\RequestsRepository;
 use App\Helpers\GeneralHelpers;
+use App\Repositories\DriversRepository;
+use App\Repositories\ClientsRepository;
+use App\Repositories\LocationsRepository;
+use App\Repositories\NotificationsRepository;
 use Datatables;
-class RequestsLibrary
+
+class RequestLibrary
 {
 	protected $activeRequestsPath;
 	protected $driverHistoricalRequestsPath;
 	protected $customerHistoricalRequestsPath;
+
 	function __construct()
 	{
 		$this->activeRequestsPath = config('constants.REFRENCES_PATHS.ACTIVE_REQUESTS');
@@ -68,6 +74,74 @@ class RequestsLibrary
                 return $returnHTML;
             })
             ->make(true);
+
     	return $datatableData;
+    }
+
+    public static function getOnlineDriversLocations()
+    {
+        $onlineDriversLocations = DriversRepository::getOnlineDriversLocations();
+        $locations = [];
+        foreach ($onlineDriversLocations as $key => $location) {
+            $locations[$key]['lat'] = $location['l'][0];
+            $locations[$key]['long'] = $location['l'][1];
+        }
+
+        return $locations;
+    }
+
+    public static function getOnlineDriversDistancesSorted($customerLocation)
+    {
+        $driversLocations = self::getOnlineDriversLocations();
+        $driversDistances = [];
+        foreach ($driversLocations as $key => $driverLocation) {
+            $driversDistances[$key] = GeneralHelpers::calcDistance(
+                $driverLocation['lat'],
+                $driverLocation['long'],
+                $customerLocation['lat'],
+                $customerLocation['long']
+            );
+        }
+
+        asort($driversDistances);
+
+        return $driversDistances;
+    }
+
+
+    public static function getDataOfCustomerForRequest($customerId)
+    {
+        $customer = ClientsRepository::getCustomer($customerId);
+        $customerData = [
+            'customerID'=>$customer['userID'],
+            'customerImageURL'=>$customer['imageURL']?:$customer['imageURL'],
+            'customerName'=>$customer['username']?:$customer['username'],
+            'customerPhone'=>$customer['phone']?:$customer['phone'],
+            'customerToken'=>$customer['token']?:$customer['token']
+        ];
+
+        return $customerData;
+    }
+
+    public static function getDataOfDriverForRequest($driverId)
+    {
+        $driver = DriversRepository::getDriver($driverId);
+
+        $driverLatLong = LocationsRepository::getDriverLatLong($driverId);
+
+        $driverData = [
+            'driverCarModel'=>$driver['carModel']?: $driver['carModel'],
+            'driverCarNumber'=>$driver['carNumber']?: $driver['carNumber'],
+            'driverID'=>$driver['userID']?: $driver['userID'],
+            'driverImageURL'=>$driver['imageURL']?: $driver['imageURL'],
+            'driverLat'=>$driverLatLong['l'][0],
+            'driverLng'=>$driverLatLong['l'][1],
+            'driverName'=>$driver['username']?: $driver['username'],
+            'driverOrder'=>1,
+            'driverPhone'=>$driver['phone']?: $driver['phone'],
+            'driverToken'=>$driver['token']?: $driver['token']
+        ];
+
+        return $driverData;
     }
 }

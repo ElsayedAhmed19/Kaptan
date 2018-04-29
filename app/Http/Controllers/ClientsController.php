@@ -8,23 +8,25 @@ use Kreait\Firebase\Database;
 use App\Helpers\FirebaseHelper;
 use Illuminate\Http\Request;
 use App\Repositories\ClientsRepository;
+use App\Libraries\ClientsLibrary;
 use Datatables;
 use Validator;
+
 class ClientsController extends Controller
 {
 	function insertClient(Request $request)
 	{
         $validator = Validator::make($request->all(), [
-            'name' => 'required|min:6'
+            'name' => 'required|min:6',
+            'email' => 'required|email',
+            'phone' => 'required|numeric',
+            'password' => 'required|confirmed|min:6',
         ]);
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return redirect('clients/add_client')
                 ->withErrors($validator)
                 ->withInput();
-        }
-        else
-        {
+        } else {
             $firebaseHelper = new FirebaseHelper;
 
             $createdUser = $firebaseHelper->auth->createUserWithEmailAndPassword(
@@ -59,15 +61,14 @@ class ClientsController extends Controller
     			'overallRatingCount'=>0,
     			'phone'=>$phone,
     			'token'=>'Token',
-    			'userID'=>'User id',
-    			'username'=>'user name'
+    			'userID'=>$id,
+    			'username'=>$name
         	]);
             return redirect('clients');
         } 
 	}
     public function allClients()
     {
-    	$clients = ClientsRepository::getClients();
         return view('clients.all_clients');
     }
 
@@ -76,8 +77,10 @@ class ClientsController extends Controller
         $clients = ClientsRepository::getClients();
         $objClients = null;
         foreach ($clients as $key => $client) {
-            $client['id'] = $key;
-            $objClients [] = (object) $client;
+            if (is_array($client)) {
+                $client['id'] = $key;
+                $objClients [] = (object) $client;
+            }        
         }
 
         return Datatables::of($objClients) 
@@ -92,10 +95,6 @@ class ClientsController extends Controller
             ->addColumn('phone', function ($client) {
                 $phone = !isset($client->phone)? 'unspecified': $client->phone;
                 return $phone;
-            })
-            ->addColumn('nationality', function ($client) {
-                $nationality = !isset($client->nationality)? 'unspecified': $client->nationality;
-                return $nationality;
             })
             ->addColumn('onTrip', function ($client) {
                 if (!isset($client->onTrip)) {
@@ -134,47 +133,105 @@ class ClientsController extends Controller
             ->make(true);
     }
 
+    public function getCreateRequest()
+    {
+        $clients = ClientsRepository::getClients();
+
+        return view('clients.make_request', ['clients' => array_values($clients)]);
+    }
+
+    public function editClient($id)
+    {
+
+        $client = ClientsRepository::getCustomer($id);
+
+        if ($client) {
+            return view('clients.add_client', ['client'=>$client, 'edit'=>true]);
+        } else {
+            return "not found page will be added lately";
+        }
+    }
+    public function updateClient(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'name' => 'required|min:6',
+            'email' => 'required|email',
+            'phone' => 'required',
+            'password' => 'required|confirmed|min:6',
+        ]);
+        if ($validator->fails()) {
+            return redirect('clients/add_client')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data['id'] = $request->get('id');
+        $data['fullname'] = $request->get('name');
+        $data['email'] = $request->get('email');
+        $data['phone'] = $request->get('phone');
+        $data['password'] = $request->get('password');
+
+        $isUpdated = UsersLibrary::updateUser(ClientsRepository::CLIENT_REFERENCE, $data);
+        if ($isUpdated) {
+            return redirect('clients');
+        }
+    }
+
+    public function deleteClient(Request $request)
+    {
+        $id = $request->get("id");
+        ClientsLibrary::deleteClient($id);
+    }
+
+
+    public function updateClientBlockStatus($id)
+    {
+        ClientsLibrary::updateClientBlockStatus($id);
+
+        return redirect()->back();
+    }
     public function clientRequestsDatatable(Request $request)
     {
-        $requestsType = $request->get('requestsType');
+        // $requestsType = $request->get('requestsType');
 
-        // $customerId = 'from auth';
-        $customerId = '2Y4aY2hBwUhga3Zvjm8a0DQIATH2';
-        $requestsType == ClientsRepository::HISTORY_TYPE)? ClientsRepository::HISTORY_TYPE: ClientsRepository::ACTIVE_TYPE;
+        // // $customerId = 'from auth';
+        // $customerId = '2Y4aY2hBwUhga3Zvjm8a0DQIATH2';
+        // $requestsType == ClientsRepository::HISTORY_TYPE)? ClientsRepository::HISTORY_TYPE: ClientsRepository::ACTIVE_TYPE;
 
-        $clientRequests = ClientsRepository::getClientRequests($customerId, $requestsType)
+        // $clientRequests = ClientsRepository::getClientRequests($customerId, $requestsType)
 
-        return Datatables::of($clientRequests) 
-            ->addColumn('destination', function ($request) {
-                $addressDestination = !isset($request->addressDestination)? 'unspecified': $request->addressDestination;
-                return $addressDestination;
-            })
-            ->addColumn('pickup', function ($client) {
-                $addressPickup = !isset($client->addressPickup)? 'unspecified': $client->addressPickup;
-                return $addressPickup;
-            })
-            ->addColumn('carModel', function ($client) {
-                $driverCarModel = !isset($client->driverCarModel)? 'unspecified': $client->driverCarModel;
-                return $driverCarModel;
-            })
-            ->addColumn('driverName', function ($client) {
-                $driverName = !isset($client->driverName)? 'unspecified': $client->driverName;
-                return $driverName;
-            })
-            ->addColumn('requestTime', function ($request) {
-                $requestTime = !isset($request->requestTime)? 'unspecified': date("d-m-Y H:i:s", $request->requestTime/1000);
-                return $requestTime;
-            })
-            ->addColumn('onTrip', function ($client) {
-                if (!isset($client->onTrip)) {
-                    $onTrip = 'unspecified';
-                } else if($client->onTrip) {
-                    $onTrip = 'Yes';
-                } else {
-                    $onTrip = 'No';
-                }
-                return $onTrip;
-            })
-            ->make(true);
+        // return Datatables::of($clientRequests) 
+        //     ->addColumn('destination', function ($request) {
+        //         $addressDestination = !isset($request->addressDestination)? 'unspecified': $request->addressDestination;
+        //         return $addressDestination;
+        //     })
+        //     ->addColumn('pickup', function ($client) {
+        //         $addressPickup = !isset($client->addressPickup)? 'unspecified': $client->addressPickup;
+        //         return $addressPickup;
+        //     })
+        //     ->addColumn('carModel', function ($client) {
+        //         $driverCarModel = !isset($client->driverCarModel)? 'unspecified': $client->driverCarModel;
+        //         return $driverCarModel;
+        //     })
+        //     ->addColumn('driverName', function ($client) {
+        //         $driverName = !isset($client->driverName)? 'unspecified': $client->driverName;
+        //         return $driverName;
+        //     })
+        //     ->addColumn('requestTime', function ($request) {
+        //         $requestTime = !isset($request->requestTime)? 'unspecified': date("d-m-Y H:i:s", $request->requestTime/1000);
+        //         return $requestTime;
+        //     })
+        //     ->addColumn('onTrip', function ($client) {
+        //         if (!isset($client->onTrip)) {
+        //             $onTrip = 'unspecified';
+        //         } else if($client->onTrip) {
+        //             $onTrip = 'Yes';
+        //         } else {
+        //             $onTrip = 'No';
+        //         }
+        //         return $onTrip;
+        //     })
+        //     ->make(true);
     }
 }

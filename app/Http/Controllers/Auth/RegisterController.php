@@ -99,11 +99,10 @@ class RegisterController extends Controller
             'overallRatingCount'=>0,
             'phone'=>$phone,
             'token'=>'Token',
-            'userID'=>'User id',
+            'userID'=>$id,
             'username'=>'user name'
         ]);
 
-        $user = new User($request->get('name'), $request->get('email'), $request->get('phone'));
-        return $user;
+        return $isInserted;
     }
 }

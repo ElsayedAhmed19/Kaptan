@@ -9,6 +9,10 @@ Route::group(['prefix'=>'drivers'], function(){
 	Route::get('datatable', 'DriversController@datatable')->name('drivers_datatable');
 
 	Route::get('get-drivers-to-map', 'DriversController@getDriversToMap');
+	Route::get('{id}/edit', 'DriversController@editDriver');
+	Route::post('update_driver', 'DriversController@updateDriver');
+	Route::delete('delete', 'DriversController@deleteDriver');
+	Route::get('{id}/change_block_status', 'DriversController@updateDriverBlockStatus');
 });
 
 
@@ -22,14 +26,17 @@ Route::group(['prefix'=>'clients'], function(){
 	Route::post('/insert_client', 'ClientsController@insertClient');
 
 	Route::get('datatable', 'ClientsController@datatable')->name('clients_datatable');
-	Route::get('make_request', function(){
-		return view('clients.make_request');
-	});
+	Route::get('create_request', 'ClientsController@getCreateRequest');
+
+	Route::get('{id}/edit', 'ClientsController@editClient');
+	Route::post('update_client', 'ClientsController@updateClient');
+	Route::delete('delete', 'ClientsController@deleteClient');
+	Route::get('{id}/change_block_status', 'ClientsController@updateClientBlockStatus');
 
 	Route::get('history', function(){
 		return view('clients.history');
 	});
-	Route::get('datatable', 'ClientsController@clientRequestsDatatable')->name('client_requests_datatable');
+	// Route::get('datatable', 'ClientsController@clientRequestsDatatable')->name('client_requests_datatable');
 
 });
 
@@ -38,16 +45,18 @@ Route::group(['prefix'=>'requests'], function(){
 	Route::get('/history/{any?}', 'RequestsController@allRequests');
 
 	Route::get('datatable', 'RequestsController@datatable')->name('requests_datatable');
-	Route::get('get_map', function(){
-		return view('maps.make_request');
-	});
+	Route::get('get_map','DriversController@map');
+
+	Route::post('create_request', 'RequestsController@createRequest');
+
 });
 
-Route::get('test-map', function(){
-	return view('test-map');
+Route::get('advanced', function(){
+	return view('advanced');
 });
 
-Route::get('auth', 'AuthController@auth');
+Route::get('/logout', 'Auth\LoginController@logout');
+Route::post('auth', 'Auth\LoginController@auth');
 Route::post('sign-in', 'DriversController@signIn');
 Route::get('/', function () {
     return view('welcome');

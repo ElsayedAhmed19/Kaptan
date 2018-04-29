@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Helpers\FirebaseHelper;
 use App\Http\Controllers\Controller;
+use App\Repositories\UsersRepository;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Kreait\Firebase\Auth;
+use Kreait\Firebase\Exception\AuthException;
 
 class LoginController extends Controller
 {
@@ -35,5 +40,32 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+    public function auth(Request $request)
+    {
+        $helper = new FirebaseHelper();
+        try {
+            $user = $helper->auth->getUserByEmailAndPassword($request->input("email"), $request->input("password"));
+            $userData = UsersRepository::getUserByID($user->getUid());
+            if (isset($userData['isAdmin'])&&$userData['isAdmin'] == true) {
+                return redirect('drivers/');
+            } elseif (isset($userData['isHotel'])&&$userData['isHotel']== true) {
+                return redirect('clients/');
+            }else{
+                return redirect('/');
+            }
+        } catch (AuthException $e) {
+            $message = $e->getMessage();
+            return view('auth.login', compact('message'));
+        }
+    }
+
+    public function logout()
+    {
+//        dump('gg');die();
+        $helper = new FirebaseHelper();
+//        $helper->auth->getInstance().signOut();
+        dump($helper->auth);die();
+        return redirect('/login');
     }
 }
