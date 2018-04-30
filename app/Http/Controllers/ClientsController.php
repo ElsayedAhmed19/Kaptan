@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Session;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\ServiceAccount;
 use Kreait\Firebase\Database;
@@ -14,8 +15,18 @@ use Validator;
 
 class ClientsController extends Controller
 {
-	function insertClient(Request $request)
-	{
+    public function __construct()
+    {
+//        dump(Session::get('user'));die();
+        if (Session::get('user')['isAdmin'] == false && Session::get('user')['isHotel'] == false&&!empty(Session::get('user'))) {
+            return 404;
+        }elseif(empty(Session::get('user'))){
+            return redirect('/login');
+        }
+    }
+
+    function insertClient(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|min:6',
             'email' => 'required|email',
@@ -34,39 +45,40 @@ class ClientsController extends Controller
                 $request->get('password')
             );
             $id = $createdUser->getUid();
-    		$name = $request->get('name');
-    		$email = $request->get('email');
-    		$phone = $request->get('phone');
-    		$password = $request->get('password');
-        	$isInserted = ClientsRepository::insertClient([
+            $name = $request->get('name');
+            $email = $request->get('email');
+            $phone = $request->get('phone');
+            $password = $request->get('password');
+            $isInserted = ClientsRepository::insertClient([
                 'id' => $id,
-        		'admin'=>false,
-        		'blocked'=>true,
-        		'admin'=>false,
-        		'attendance'=>0,
-        		'balance'=>0,
-        		'behavior'=>0,
-        		'behaviorCount'=>0,
-        		'blocked'=>true,
-        		'deleted'=>false,
-        		'email'=>$email,
-        		'fullname'=>$name,
-        		'imageURL'=>'',
-                'isAdmin'=>false,
-        		'isOnline'=>false,
-                'membersince'=>time(),
-    			'nationality'=>'',
-                'online'=>false,
-    			'onTrip'=>false,
-    			'overallRatingCount'=>0,
-    			'phone'=>$phone,
-    			'token'=>'Token',
-    			'userID'=>$id,
-    			'username'=>$name
-        	]);
+                'admin' => false,
+                'blocked' => true,
+                'attendance' => 0,
+                'balance' => 0,
+                'behavior' => 0,
+                'behaviorCount' => 0,
+                'deleted' => false,
+                'email' => $email,
+                'fullname' => $name,
+                'imageURL' => '',
+                'isAdmin' => false,
+                'isHotel'=>false,
+                'hotelID'=>Session::get('user')['userID'],
+                'isOnline' => false,
+                'membersince' => time(),
+                'nationality' => '',
+                'online' => false,
+                'onTrip' => false,
+                'overallRatingCount' => 0,
+                'phone' => $phone,
+                'token' => 'Token',
+                'userID' => $id,
+                'username' => $name
+            ]);
             return redirect('clients');
-        } 
-	}
+        }
+    }
+
     public function allClients()
     {
         return view('clients.all_clients');
@@ -74,32 +86,35 @@ class ClientsController extends Controller
 
     public function datatable()
     {
+        if (!empty(Session::get('user'))&&Session::get('user')['isHotel']==true){
+
+        }else{}
         $clients = ClientsRepository::getClients();
         $objClients = null;
         foreach ($clients as $key => $client) {
             if (is_array($client)) {
                 $client['id'] = $key;
-                $objClients [] = (object) $client;
-            }        
+                $objClients [] = (object)$client;
+            }
         }
 
-        return Datatables::of($objClients) 
+        return Datatables::of($objClients)
             ->addColumn('fullname', function ($client) {
-                $fullname = !isset($client->fullname)? 'unspecified': $client->fullname;
+                $fullname = !isset($client->fullname) ? 'unspecified' : $client->fullname;
                 return $fullname;
             })
             ->addColumn('email', function ($client) {
-                $email = !isset($client->email)? 'unspecified': $client->email;
+                $email = !isset($client->email) ? 'unspecified' : $client->email;
                 return $email;
             })
             ->addColumn('phone', function ($client) {
-                $phone = !isset($client->phone)? 'unspecified': $client->phone;
+                $phone = !isset($client->phone) ? 'unspecified' : $client->phone;
                 return $phone;
             })
             ->addColumn('onTrip', function ($client) {
                 if (!isset($client->onTrip)) {
                     $onTrip = 'unspecified';
-                } else if($client->onTrip) {
+                } else if ($client->onTrip) {
                     $onTrip = 'Yes';
                 } else {
                     $onTrip = 'No';
@@ -109,7 +124,7 @@ class ClientsController extends Controller
             ->addColumn('online', function ($client) {
                 if (!isset($client->online)) {
                     $online = 'unspecified';
-                } else if($client->online) {
+                } else if ($client->online) {
                     $online = 'Yes';
                 } else {
                     $online = 'No';
@@ -119,7 +134,7 @@ class ClientsController extends Controller
             ->addColumn('blocked', function ($client) {
                 if (!isset($client->onTrip)) {
                     $blocked = 'unspecified';
-                } else if($client->blocked) {
+                } else if ($client->blocked) {
                     $blocked = 'Yes';
                 } else {
                     $blocked = 'No';
@@ -146,11 +161,12 @@ class ClientsController extends Controller
         $client = ClientsRepository::getCustomer($id);
 
         if ($client) {
-            return view('clients.add_client', ['client'=>$client, 'edit'=>true]);
+            return view('clients.add_client', ['client' => $client, 'edit' => true]);
         } else {
             return "not found page will be added lately";
         }
     }
+
     public function updateClient(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -191,6 +207,7 @@ class ClientsController extends Controller
 
         return redirect()->back();
     }
+
     public function clientRequestsDatatable(Request $request)
     {
         // $requestsType = $request->get('requestsType');

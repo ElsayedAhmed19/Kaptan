@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\ServiceAccount;
@@ -20,10 +22,13 @@ class DriversController extends Controller
 {
     function __construct()
     {
-//        $value = Cookie::get('user');
-//        dump($value);die();
-//        parent::__construct();
-//        dump($this->user);die();
+//        dump(Session::get('user')['isAdmin']);die();
+        if (Session::get('user')['isAdmin'] != true && !empty(Session::get('user')) ) {
+//            dump('hi');die();
+            return abort(404);
+        }elseif(empty(Session::get('user'))){
+            return redirect('login');
+        }
     }
 
     function signIn(Request $request)

@@ -50,6 +50,7 @@ class LoginController extends Controller
             $userData = UsersRepository::getUserByID($user->getUid());
             Session::put('user', $userData);
             $request->attributes->add(['user' => $userData]);
+//            session(['user',$userData]);
 //            dump($request->get('user'));die();
             //  dump(Session::get('user'));die();
             if (isset($userData['isAdmin'])&&$userData['isAdmin'] == true) {
