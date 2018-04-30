@@ -56,6 +56,7 @@ Route::get('advanced', function(){
 });
 
 Route::get('/logout', 'Auth\LoginController@logout');
+Route::get('/filter/{id}', 'DriversController@filterMap');
 Route::post('auth', 'Auth\LoginController@auth');
 Route::post('sign-in', 'DriversController@signIn');
 Route::get('/', function () {

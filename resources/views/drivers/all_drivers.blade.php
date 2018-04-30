@@ -1,6 +1,6 @@
 @extends("layouts.master")
 @section('title', "All Drivers")
-@section("content")
+
 @section('content_header')
 
 <ol class="breadcrumb">
@@ -9,7 +9,7 @@
     <li class="active">All Drivers</li>
 </ol>
 @endsection
-
+@section("content")
 <div class="contnet">
     @if(Session::has('message'))
        <div class="alert alert-success alert-dismissable">

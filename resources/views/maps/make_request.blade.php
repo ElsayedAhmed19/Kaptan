@@ -11,7 +11,14 @@
 @endsection
 @section("content")
     <div class="content">
-        <div class="col-md-8">
+
+        <select class="form-control" name="filter" id="filter">
+            <option value="0" >Filter</option>
+            <option value="1">Online</option>
+            <option value="2" >Offline</option>
+            <option value="3">OnTrip</option>
+        </select>
+        <div class="col-md-8" id="map">
             <div style="width: 1100px; height: 500px;">
                 @php
                     if(!empty($online_drivers)){
@@ -103,21 +110,32 @@
             </div>
         </div>
         <div class="col-md-2">
-            {{--<input type="button" name="make_request" id="btnRequest" class="btn btn-primary" value="Order request">--}}
         </div>
     </div>
 
 
 @endsection
 @section('scripts')
-    {{--<script src="https://maps.google.com/maps/api/js?key=AIzaSyD1Gl5s7GwdjHGSUcA7sseiHIkmWCtLS-0"></script>--}}
-
     <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase-messaging.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase-functions.js"></script>
+    <script>
+        $( "#filter" ).change(function() {
+            var filter=$('#filter').val();
+            // console.log(filter);
+            $.ajax({
+                type:'get',
+                url:'/filter/'+filter,
+                success:function(data){
+                    // console.log(data)
+                   $('#map').innerHTML(data);
+                }
+            });
 
+        });
+    </script>
 
 @endsection

@@ -12,7 +12,7 @@ class RequestsRepository
 	const DRIVERS_HISTORY_REQUESTS_REFERENCE = 'requests/history/drivers';
 
 	const REQUEST_SLEEP_PERIOD = '60';
-	
+
 
 	public static function getRequests($requestsPath)
 	{
