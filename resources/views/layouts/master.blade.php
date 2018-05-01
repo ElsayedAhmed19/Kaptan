@@ -14,7 +14,7 @@
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     <!-- jvectormap -->
-    <link rel="stylesheet" href="{{URL::asset('plugins/jvectormap/jquery-jvectormap-1.2.2.css')}}">
+    {{--<link rel="stylesheet" href="{{URL::asset('plugins/jvectormap/jquery-jvectormap-1.2.2.css')}}">--}}
     <!-- Theme style -->
     <link rel="stylesheet" href="{{URL::asset('dist/css/AdminLTE.css')}}">
     <!-- Adr instead of downloading all of them to reduce the load. -->
@@ -180,8 +180,8 @@
 <!-- Sparkline -->
 <script src="{{url::asset('plugins/sparkline/jquery.sparkline.min.js')}}"></script>
 <!-- jvectormap -->
-<script src="{{url::asset('plugins/jvectormap/jquery-jvectormap-1.2.2.min.js')}}"></script>
-<script src="{{url::asset('plugins/jvectormap/jquery-jvectormap-world-mill-en.js')}}"></script>
+{{--<script src="{{url::asset('plugins/jvectormap/jquery-jvectormap-1.2.2.min.js')}}"></script>--}}
+{{--<script src="{{url::asset('plugins/jvectormap/jquery-jvectormap-world-mill-en.js')}}"></script>--}}
 <!-- SlimScroll 1.3.0 -->
 <script src="{{url::asset('plugins/slimScroll/jquery.slimscroll.min.js')}}"></script>
 <!-- ChartJS 1.0.1 -->

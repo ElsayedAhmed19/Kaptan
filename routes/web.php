@@ -48,7 +48,7 @@ Route::group(['prefix' => 'requests'], function () {
     Route::get('/history/{any?}', 'RequestsController@allRequests');
 
     Route::get('datatable', 'RequestsController@datatable')->name('requests_datatable');
-    Route::get('get_map', 'DriversController@map');
+    Route::get('get_map', 'ClientsController@map');
 
     Route::post('create_request', 'RequestsController@createRequest');
 
@@ -58,12 +58,17 @@ Route::get('advanced', function () {
     return view('advanced');
 });
 
-Route::get('/logout', 'Auth\LoginController@logout');
+Route::get('/logout', function() {
+    if (Session::has('user')) {
+        Session::forget('user');
+    }
+    return redirect('/login');
+});
 Route::get('/404', function () {
     return view('404');
 });
 
-Route::get('/filter/{id}', 'DriversController@filterMap');
+Route::get('/filter/{id}', 'ClientsController@filterMap');
 Route::post('auth', 'Auth\LoginController@auth');
 Route::post('sign-in', 'DriversController@signIn');
 Route::get('/', function () {

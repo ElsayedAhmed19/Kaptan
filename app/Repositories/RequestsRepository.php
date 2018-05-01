@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Helpers\FirebaseHelper;
 use App\References\References;
+use Illuminate\Support\Facades\Session;
 
 class RequestsRepository
 {
@@ -18,7 +19,20 @@ class RequestsRepository
 	{
 		$helper = new FirebaseHelper;
 		$data = $helper->get($requestsPath);
-
+		$data_array=array();
+//		dump($data);die();
+//        if (!empty(Session::get('user'))&&Session::get('user')['isHotel']==true&&isset(Session::get('user')['isHotel'])){
+//            if (!empty($data)) {
+//                foreach ($data as $value) {
+//                    foreach ($value as $value1) {
+//                        if (isset($value1['hotelID']) && $value1['hotelID'] == Session::get('user')['userID']) {
+//                            $data_array[] = $value;
+//                        }break;
+//                    }
+//                }
+//            }
+//            $data=$data_array;
+//        }
 		return $data;
 	}
 

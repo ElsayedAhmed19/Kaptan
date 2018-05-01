@@ -11,15 +11,16 @@
 @endsection
 @section("content")
     <div class="content">
-
+        @if (Session::get('user')['isAdmin'] == true && !empty(Session::get('user')) )
         <select class="form-control" name="filter" id="filter">
-            <option value="0" >Filter</option>
+            <option value="0">Filter</option>
             <option value="1">Online</option>
-            <option value="2" >Offline</option>
+            <option value="2">Offline</option>
             <option value="3">OnTrip</option>
         </select>
-        <div class="col-md-8" id="map">
-            <div style="width: 1100px; height: 500px;">
+        @endif
+        <div class="col-md-8" >
+            <div id="map" name="map" style="width: 1100px; height: 500px;">
                 @php
                     if(!empty($online_drivers)){
                     Mapper::map($online_drivers[0]['latitude'],$online_drivers[0]['longitude'])->informationWindow($online_drivers[0]['latitude'],$online_drivers[0]['longitude'],"Driver Name:  {$online_drivers[0]['username']} - Mobile: {$online_drivers[0]['phone']}", [ 'title' => 'Online','icon' => [
@@ -39,7 +40,7 @@
                     'strokeColor' => '#62d23e',
                     'strokeWeight' => 2
                 ]])->rectangle([['latitude' => $busy_drivers[0]['latitude'], 'longitude' => $busy_drivers[0]['longitude']], ['latitude' => $busy_drivers[0]['latitude'], 'longitude' => $busy_drivers[0]['longitude']]], ['strokeColor' => '#ea234a', 'strokeOpacity' => 0.1, 'strokeWeight' => 2, 'fillColor' => '#FFFFFF']);
-                    }else{
+                    }elseif(!empty($offline_drivers)){
                     Mapper::map($offline_drivers[0]['latitude'],$offline_drivers[0]['longitude'])->informationWindow($offline_drivers[0]['latitude'],$offline_drivers[0]['longitude'],"Driver Name:  {$offline_drivers[0]['username']} - Mobile: {$offline_drivers[0]['phone']}", [ 'title' => 'Online','icon' => [
             'path' => 'M365.027,44.5c-30-29.667-66.333-44.5-109-44.5s-79,14.833-109,44.5s-45,65.5-45,107.5    c0,25.333,12.833,67.667,38.5,127c25.667,59.334,51.333,113.334,77,162s38.5,72.334,38.5,71c4-7.334,9.5-17.334,16.5-30    s19.333-36.5,37-71.5s33.167-67.166,46.5-96.5c13.334-29.332,25.667-59.667,37-91s17-55,17-71    C410.027,110,395.027,74.167,365.027,44.5z M289.027,184c-9.333,9.333-20.5,14-33.5,14c-13,0-24.167-4.667-33.5-14    s-14-20.5-14-33.5s4.667-24,14-33s20.5-13.5,33.5-13.5c13,0,24.167,4.5,33.5,13.5s14,20,14,33S298.36,174.667,289.027,184z',
             'fillColor' => '#62d233',
@@ -48,6 +49,8 @@
             'strokeColor' => '#62d23e',
             'strokeWeight' => 2
         ]])->rectangle([['latitude' => $offline_drivers[0]['latitude'], 'longitude' => $offline_drivers[0]['longitude']], ['latitude' => $offline_drivers[0]['latitude'], 'longitude' => $offline_drivers[0]['longitude']]], ['strokeColor' => '#ea234a', 'strokeOpacity' => 0.1, 'strokeWeight' => 2, 'fillColor' => '#FFFFFF']);
+                    }else{
+                    Mapper::map(53.381128999999990000, -1.470085000000040000);
                     }
                         if (! empty($online_drivers) && count($online_drivers) >0) {
 
@@ -123,19 +126,19 @@
     <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase-messaging.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase-functions.js"></script>
     <script>
-        $( "#filter" ).change(function() {
-            var filter=$('#filter').val();
+        // $("#filter").change(function () {
+        //     var filter = $('#filter').val();
             // console.log(filter);
-            $.ajax({
-                type:'get',
-                url:'/filter/'+filter,
-                success:function(data){
+            // $.ajax({
+            //     type: 'get',
+            //     url: '/filter/' + filter,
+            //     success: function (data) {
                     // console.log(data)
-                   $('#map').innerHTML(data);
-                }
-            });
+                    // $('#map').html(data);
+                // }
+            // });
 
-        });
+        // });
     </script>
 
 @endsection

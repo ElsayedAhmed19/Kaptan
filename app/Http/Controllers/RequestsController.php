@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Session;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\ServiceAccount;
 use Kreait\Firebase\Database;
@@ -25,6 +26,7 @@ class RequestsController extends Controller
 
     public function datatable(Request $request)
     {
+
         $currentPath = $request->get('currentPath');
         $datatableData = $this->requestsLibrary->getRequestsInDatatable($currentPath);
 

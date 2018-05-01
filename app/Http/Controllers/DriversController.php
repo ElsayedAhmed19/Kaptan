@@ -22,12 +22,10 @@ class DriversController extends Controller
 {
     function __construct()
     {
-//        dump(Session::get('user')['isAdmin']);die();
         if (Session::get('user')['isAdmin'] != true && !empty(Session::get('user')) ) {
-//            dump('hi');die();
             return abort(404);
         }elseif(empty(Session::get('user'))){
-            return redirect('login');
+            return Redirect::to('login')->send();
         }
     }
 
@@ -158,51 +156,6 @@ class DriversController extends Controller
             ->make(true);
     }
 
-    public function map()
-    {
-        $drivers = DriversRepository::getDriversWithLocations();
-        $online_drivers = array();
-        $offline_drivers = array();
-        $busy_drivers = array();
-        foreach ($drivers as $value) {
-            if (isset($value['isOnTrip']) && $value['isOnTrip'] == false && isset($value['isOnline']) && $value['isOnline'] == false) {
-                $offline_drivers[] = $value;
-            } elseif (isset($value['isOnTrip']) && $value['isOnTrip'] == true && isset($value['isOnline']) && $value['isOnline'] == false) {
-                $busy_drivers[] = $value;
-            } elseif (isset($value['isOnTrip']) && $value['isOnTrip'] == false && isset($value['isOnline']) && $value['isOnline'] == true) {
-                $online_drivers[] = $value;
-            }
-        }
-
-        return view('maps.make_request', compact('online_drivers', 'offline_drivers', 'busy_drivers'));
-    }
-    public function filterMap($id)
-    {
-        $drivers = DriversRepository::getDriversWithLocations();
-        $online_drivers = array();
-        $offline_drivers = array();
-        $busy_drivers = array();
-        foreach ($drivers as $value) {
-            if (isset($value['isOnTrip']) && $value['isOnTrip'] == false && isset($value['isOnline']) && $value['isOnline'] == false) {
-                $offline_drivers[] = $value;
-            } elseif (isset($value['isOnTrip']) && $value['isOnTrip'] == true && isset($value['isOnline']) && $value['isOnline'] == false) {
-                $busy_drivers[] = $value;
-            } elseif (isset($value['isOnTrip']) && $value['isOnTrip'] == false && isset($value['isOnline']) && $value['isOnline'] == true) {
-                $online_drivers[] = $value;
-            }
-        }
-        if ($id == 1) {
-            $offline_drivers=null;
-            $busy_drivers=null;
-        } elseif ($id == 2) {
-            $online_drivers=null;
-            $busy_drivers=null;
-        } elseif ($id == 3) {
-            $offline_drivers=null;
-            $online_drivers=null;
-        }
-        return view('maps.mapDiv', compact('online_drivers', 'offline_drivers', 'busy_drivers'));
-    }
 
     public function getDriversToMap()
     {

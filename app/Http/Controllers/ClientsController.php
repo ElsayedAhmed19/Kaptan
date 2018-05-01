@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\DriversRepository;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\ServiceAccount;
@@ -17,11 +19,10 @@ class ClientsController extends Controller
 {
     public function __construct()
     {
-//        dump(Session::get('user'));die();
-        if (Session::get('user')['isAdmin'] == false && Session::get('user')['isHotel'] == false&&!empty(Session::get('user'))) {
-            return 404;
-        }elseif(empty(Session::get('user'))){
-            return redirect('/login');
+        if (Session::get('user')['isAdmin'] == false && Session::get('user')['isHotel'] == false && !empty(Session::get('user'))) {
+            return abort(404);
+        } elseif (empty(Session::get('user'))) {
+            return Redirect::to('login')->send();
         }
     }
 
@@ -49,6 +50,12 @@ class ClientsController extends Controller
             $email = $request->get('email');
             $phone = $request->get('phone');
             $password = $request->get('password');
+            $isHotel = false;
+            $hotelID = 0;
+            if (!empty(Session::get('user')) && Session::get('user')['isHotel'] == true && isset(Session::get('user')['hotelID'])) {
+                $hotelID = Session::get('user')['userID'];
+            }
+
             $isInserted = ClientsRepository::insertClient([
                 'id' => $id,
                 'admin' => false,
@@ -56,14 +63,14 @@ class ClientsController extends Controller
                 'attendance' => 0,
                 'balance' => 0,
                 'behavior' => 0,
+                'isHotel' => $isHotel,
+                'hotelID' => $hotelID,
                 'behaviorCount' => 0,
                 'deleted' => false,
                 'email' => $email,
                 'fullname' => $name,
                 'imageURL' => '',
                 'isAdmin' => false,
-                'isHotel'=>false,
-                'hotelID'=>Session::get('user')['userID'],
                 'isOnline' => false,
                 'membersince' => time(),
                 'nationality' => '',
@@ -86,10 +93,12 @@ class ClientsController extends Controller
 
     public function datatable()
     {
-        if (!empty(Session::get('user'))&&Session::get('user')['isHotel']==true){
+        if (!empty(Session::get('user')) && Session::get('user')['isHotel'] == true &&Session::get('user')['isAdmin'] == false && isset(Session::get('user')['hotelID'])) {
+            $clients = ClientsRepository::getHotelCustomers(Session::get('user')['userID']);
+        } else {
+            $clients = ClientsRepository::getClients();
+        }
 
-        }else{}
-        $clients = ClientsRepository::getClients();
         $objClients = null;
         foreach ($clients as $key => $client) {
             if (is_array($client)) {
@@ -193,6 +202,58 @@ class ClientsController extends Controller
             return redirect('clients');
         }
     }
+
+    public function map()
+    {
+        $drivers = DriversRepository::getDriversWithLocations();
+        $online_drivers = array();
+        $offline_drivers = array();
+        $busy_drivers = array();
+        foreach ($drivers as $value) {
+            if (isset($value['isOnTrip']) && $value['isOnTrip'] == false && isset($value['isOnline']) && $value['isOnline'] == false) {
+                $offline_drivers[] = $value;
+            } elseif (isset($value['isOnTrip']) && $value['isOnTrip'] == true && isset($value['isOnline']) && $value['isOnline'] == false) {
+                $busy_drivers[] = $value;
+            } elseif (isset($value['isOnTrip']) && $value['isOnTrip'] == false && isset($value['isOnline']) && $value['isOnline'] == true) {
+                $online_drivers[] = $value;
+            }
+        }
+        if (Session::get('user')['isHotel'] == true &&Session::get('user')['isAdmin'] == false && !empty(Session::get('user')) && isset(Session::get('user')['userID'])) {
+            $offline_drivers = 0;
+            $busy_drivers = 0;
+        }
+
+        return view('maps.make_request', compact('online_drivers', 'offline_drivers', 'busy_drivers'));
+    }
+
+    public function filterMap($id)
+    {
+        $drivers = DriversRepository::getDriversWithLocations();
+        $online_drivers = array();
+        $offline_drivers = array();
+        $busy_drivers = array();
+        foreach ($drivers as $value) {
+            if (isset($value['isOnTrip']) && $value['isOnTrip'] == false && isset($value['isOnline']) && $value['isOnline'] == false) {
+                $offline_drivers[] = $value;
+            } elseif (isset($value['isOnTrip']) && $value['isOnTrip'] == true && isset($value['isOnline']) && $value['isOnline'] == false) {
+                $busy_drivers[] = $value;
+            } elseif (isset($value['isOnTrip']) && $value['isOnTrip'] == false && isset($value['isOnline']) && $value['isOnline'] == true) {
+                $online_drivers[] = $value;
+            }
+        }
+        if ($id == 1) {
+            $offline_drivers = null;
+            $busy_drivers = null;
+        } elseif ($id == 2) {
+            $online_drivers = null;
+            $busy_drivers = null;
+        } elseif ($id == 3) {
+            $offline_drivers = null;
+            $online_drivers = null;
+        }
+        return view('maps.mapDiv', compact('online_drivers', 'offline_drivers', 'busy_drivers'));
+    }
+
 
     public function deleteClient(Request $request)
     {

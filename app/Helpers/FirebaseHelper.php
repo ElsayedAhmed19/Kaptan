@@ -8,7 +8,7 @@ use Kreait\Firebase\Database;
 
 class FirebaseHelper
 {
-	protected $database;
+	public $database;
     public $auth;
 	public function __construct()
 	{
