@@ -22,11 +22,11 @@ class DriversController extends Controller
 {
     function __construct()
     {
-        if (Session::get('user')['isAdmin'] != true && !empty(Session::get('user')) ) {
-            return abort(404);
-        }elseif(empty(Session::get('user'))){
-            return Redirect::to('login')->send();
-        }
+        // if (Session::get('user')['isAdmin'] != true && !empty(Session::get('user')) ) {
+        //     return abort(404);
+        // }elseif(empty(Session::get('user'))){
+        //     return Redirect::to('login')->send();
+        // }
     }
 
     function signIn(Request $request)
@@ -227,5 +227,10 @@ class DriversController extends Controller
         DriversLibrary::updateDriverBlockStatus($id);
 
         return redirect()->back();
+    }
+
+    public function getDriverProfile($id)
+    {
+        return view('drivers.profile');
     }
 }

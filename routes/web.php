@@ -17,6 +17,7 @@ Route::group(['prefix' => 'drivers'], function () {
     Route::post('update_driver', 'DriversController@updateDriver');
     Route::delete('delete', 'DriversController@deleteDriver');
     Route::get('{id}/change_block_status', 'DriversController@updateDriverBlockStatus');
+    Route::get('{id}/profile', 'DriversController@getDriverProfile');
 });
 
 
@@ -51,6 +52,14 @@ Route::group(['prefix' => 'requests'], function () {
     Route::get('get_map', 'ClientsController@map');
 
     Route::post('create_request', 'RequestsController@createRequest');
+
+});
+
+
+Route::group(['prefix' => 'feedbacks'], function () {
+    Route::get('/customers', 'FeedbacksController@allFeedbacks');
+    Route::get('/drivers', 'FeedbacksController@allFeedbacks');
+    Route::get('datatable/{type}', 'FeedbacksController@datatable');
 
 });
 

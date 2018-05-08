@@ -81,7 +81,6 @@
         <section class="sidebar">
             <ul class="sidebar-menu" id="sidebar-menu">
                 <li class="header">Main Menu</li>
-                @if (Session::get('user')['isAdmin'] == true)
                     <li class="treeview">
                         <a href="#">
                             <i class="fa fa-home"></i>
@@ -92,8 +91,11 @@
                                     {{'List All Drivers'}}</a></li>
                             <li><a href="{{url('drivers/add_driver')}}"><i class="fa fa-circle-o"></i>
                                     {{'Add New Driver'}}</a></li>
+
+                            <li><a href="{{url('feedbacks/drivers')}}"><i class="fa fa-circle-o"></i>
+                                {{'Drivers Feedbacks'}}</a></li>
                         </ul>
-                    </li> @endif
+                    </li> 
                 <li class="treeview">
                     <a href="#">
                         <i class="fa fa-home"></i>
@@ -106,6 +108,9 @@
                                 {{'Add New Client'}}</a></li>
                         <li><a href="{{url('clients/create_request')}}"><i class="fa fa-circle-o"></i>
                                 {{'Make Request'}}</a></li>
+
+                        <li><a href="{{url('feedbacks/customers')}}"><i class="fa fa-circle-o"></i>
+                                {{'Clients Feedbacks'}}</a></li>
                     </ul>
                 </li>
             <!--  <li class="treeview">

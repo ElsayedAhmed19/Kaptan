@@ -24,7 +24,6 @@ class UsersRepository extends FirebaseHelper
     public static function getUserByID($id){
         $helper = new FirebaseHelper;
         $data = $helper->get('users/customers'.'/'.$id);
-//        dump($data);die();
         return $data;
     }
 }

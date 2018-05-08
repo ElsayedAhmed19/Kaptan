@@ -47,7 +47,13 @@
     $(document).ready(function () {
         var url = "{{ route('drivers_datatable') }}";
         var columns =  [
-          {data: 'fullname', name: 'fullname'},
+          {
+            data: 'fullname',
+            name: 'fullname',
+            "render": function (data, type, full, meta) {
+                return '<a href="drivers/'+full.userID+'/profile">'+full.fullname+'</a>';
+              }
+          },
           {data: 'email', name: 'email'},
           {data: 'phone', name: 'phone'},
           {data: 'onTrip', name: 'onTrip'},

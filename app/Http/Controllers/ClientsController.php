@@ -19,11 +19,11 @@ class ClientsController extends Controller
 {
     public function __construct()
     {
-        if (Session::get('user')['isAdmin'] == false && Session::get('user')['isHotel'] == false && !empty(Session::get('user'))) {
-            return abort(404);
-        } elseif (empty(Session::get('user'))) {
-            return Redirect::to('login')->send();
-        }
+        // if (Session::get('user')['isAdmin'] == false && Session::get('user')['isHotel'] == false && !empty(Session::get('user'))) {
+        //     return abort(404);
+        // } elseif (empty(Session::get('user'))) {
+        //     return Redirect::to('login')->send();
+        // }
     }
 
     function insertClient(Request $request)

@@ -5,6 +5,7 @@ namespace App\Libraries;
 use App\Helpers\FirebaseHelper;
 use App\Repositories\DriversRepository;
 use App\Repositories\UsersRepository;
+use App\Repositories\ClientsRepository;
 
 class UsersLibrary
 {
@@ -36,5 +37,23 @@ class UsersLibrary
 		}
 
 		return $isUpdated;
+	}
+
+	public static function getUserType($id)
+	{
+		$firebaseHelper = new FirebaseHelper();
+
+		$client = ClientsRepository::getCustomer($id);
+
+		if ($client) {
+			return 'customers';
+		}
+
+		$driver = DriversRepository::getDriver($id);
+		if ($driver) {
+			return 'drivers';
+		}
+
+		return 'admins';
 	}
 }
